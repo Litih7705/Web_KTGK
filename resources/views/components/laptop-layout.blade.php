@@ -5,106 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{$title}}</title>
     <link rel="stylesheet" href="{{asset('library/bootstrap.min.css')}}">
-
-    <script src="{{asset('library/jquery.slim.min.js')}}"></script>
-    <script src="{{asset('library/popper.min.js')}}"></script>
-    <script src="{{asset('library/bootstrap.bundle.min.js')}}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="{{asset('library/jquery-3.7.1.js')}}" ></script>
-    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css">
 
+    <script src="{{asset('library/jquery-3.7.1.js')}}"></script>
+    <script src="{{asset('library/popper.min.js')}}"></script>
+    <script src="{{asset('library/bootstrap.bundle.min.js')}}"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            font-size: 14px;
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; font-size: 14px; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 15px; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding:5px 0; background-color: #122333; max-width:1000px; font-weight:bold; margin:0 auto; }
+        .search-bar { flex: 1; max-width: 500px; margin: 0 30px; position: relative; }
+        .search-bar input { width: 100%; padding: 5px 10px; border: none; border-radius: 20px; background-color: white; }
+        .nav-item a { color: #fff!important; }
+        .nav-item { padding: 0 5px; }
+        .search-btn { width:50px; height: 30px; color:black; background-color:white; border-radius:30px; border:none; position: absolute; right: 0; }
         
+       
+        .list-laptop { display:grid; grid-template-columns:repeat(5,20%); }
+        .laptop { 
+            position:relative; 
+            margin:10px; 
+            text-align:center; 
+            border-radius:5px; 
+            border:1px solid #dbdbdb; 
+            overflow: hidden; 
+            cursor:pointer; 
+            padding-bottom:40px; 
         }
+        .laptop a { color: black; text-decoration:none; }
+        .btn-add-product { position:absolute; bottom:5px; width:100%; left:0; padding: 0 10px; }
+        
 
-        .container {
-            max-width: 1000px; /* Chiều rộng tối đa của nội dung */
-            margin: 0 auto; /* Căn giữa nội dung */
-            padding: 0 15px;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding:5px 0;
-            background-color: #122333;
-            max-width:1000px;
-            font-weight:bold;
-            margin:0 auto;
-        }
-
-
-        .search-bar {
-            flex: 1; /* Chiếm không gian còn lại */
-            max-width: 500px;
-            margin: 0 30px;
-            
-            position: relative;
-        }
-
-        .search-bar input {
-            width: 100%;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 20px;
-            background-color: white;
-        }
-
-        .auth-buttons .btn + .btn {
-            margin-left: 10px;
-        }
-        .nav-item a
-        {
-            color: #fff!important;
-        }
-        .nav-item
-        {
-            padding:0 5px;
-        }
-
-        .search-btn
-        {
-            width:50px; 
-            height: 30px;
-            color:black; 
-            background-color:white;
-            border-radius:30px;
-            border:none;
-            position: absolute;
-            right: 0;
-        }
-
-        .list-laptop
-        {
-            display:grid;
-            grid-template-columns:repeat(5,20%);
-        }
-        .laptop
-        {
-            margin:10px;
-            text-align:center;
-            border-radius:5px;
-            border:1px solid #dbdbdb;
-            overflow: hidden;
-            cursor:pointer;
-        }
-        .laptop a
-        {
-            color: black;
-            text-decoration:none;
-        }
-        .laptop-info
-        {
-            display:grid;
-            grid-template-columns:repeat(2,30% 70%);
+        #cart-number-product {
+            width:20px; height:20px; background-color:#23b85c; color:white; font-size:12px; 
+            border:none; border-radius:50%; position:absolute; right:2px; top:-2px;
+            display: flex; align-items: center; justify-content: center;
         }
     </style>
 </head>
@@ -112,68 +51,92 @@
     <header>
         <div style='text-align:center; max-width:1000px; margin:0 auto'>
             <img src="{{asset('images/banner.png')}}" width="1000px">
-            <nav class="navbar navbar-light navbar-expand-sm">
+            
+            <nav class="navbar navbar-dark navbar-expand-sm">
                 <div class='container-fluid p-0'>
                     <div class='col-6 p-0'>
                         <ul class="navbar-nav">
                             @foreach($categories as $category)
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('laptop.category2', $category->id) }}">{{$category->ten_danh_muc}}</a>
+
                                 </li>
                             @endforeach
                         </ul>
                     </div>
+
                     <div class="search-bar">
                         <form method="post" action="{{url('/timkiem')}}">
-                            {{ csrf_field() }}
+                            @csrf
                             <input type="text" name="keyword" placeholder="Tìm kiếm laptop...">
-                            <button class="search-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            <button class="search-btn"><i class="fa fa-search"></i></button>
                         </form>
                     </div>
-                    <div style='color:white;position:relative' class='mr-2'>
-                        <div style='width:20px; height:20px;background-color:#23b85c; font-size:12px; border:none;
-                             border-radius:50%; position:absolute;right:2px;top:-2px' id='cart-number-product'>
-                                @if (session('cart'))
-                                     {{ count(session('cart')) }}
-                                @else
-                                    0
-                                @endif
+
+                    <div style='color:white; position:relative' class='mr-3'>
+                        <div id='cart-number-product'>
+                            {{ session('cart') ? count(session('cart')) : 0 }}
                         </div>
-                        <a href="{{url('/gio-hang')}}" style='cursor:pointer;color:white;'>
-                            <i class="fa fa-cart-arrow-down fa-2x mr-2 mt-1" aria-hidden="true"></i>
+                        <a href="{{url('/order')}}" style='cursor:pointer; color:white;'>
+                            <i class="fa fa-cart-arrow-down fa-2x mt-1"></i>
                         </a>
                     </div>
 
-                    <div class='col-2 p-0 d-flex'>
+                    <div class='col-2 p-0 d-flex justify-content-end'>
                         @auth
                             <div class="dropdown">
-                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                                {{ Auth::user()->name }}
+                                <button type="button" class="btn btn-success dropdown-toggle btn-sm" data-toggle="dropdown">
+                                    {{ Auth::user()->name }}
                                 </button>
-                                <div class="dropdown-menu">
-                                <a class="dropdown-item" href="">Quản lý</a>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <a class="dropdown-item" onclick="event.preventDefault();
-                                                        this.closest('form').submit();">Đăng xuất</a>
-                                </form>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="#">Quản lý đơn hàng</a>
+                                    <div class="dropdown-divider"></div>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <a class="dropdown-item" onclick="event.preventDefault(); this.closest('form').submit();">Đăng xuất</a>
+                                    </form>
                                 </div>
                             </div>
                         @else
-                            <a href="{{ route('login') }}">
-                                <button class='btn btn-sm btn-primary'>Đăng nhập</button>
-                            </a>&nbsp;
-                            <a href="{{ route('register') }}">
-                                <button class='btn btn-sm btn-success'>Đăng ký</button>
-                            </a>
+                            <a href="{{ route('login') }}" class="btn btn-sm btn-primary mr-1">Đăng nhập</a>
+                            <a href="{{ route('register') }}" class="btn btn-sm btn-success">Đăng ký</a>
                         @endauth
+                    </div>
                 </div>
             </nav>
         </div>
     </header>
-    <main class='container'>
+
+    <main class='container mt-3'>
         {{$slot}}
     </main>
 
+    <script>
+        $(document).ready(function(){
+            // Sự kiện click nút Thêm vào giỏ hàng
+            $(document).on('click', '.add-product', function(){
+                var id = $(this).attr("book_id"); // Lấy ID sản phẩm
+                var num = 1;
+
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{route('cartadd')}}", // Route xử lý thêm
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "id": id,
+                        "num": num
+                    },
+                    success: function(data){
+                        // Cập nhật số lượng trên badge giỏ hàng
+                        $("#cart-number-product").html(data);
+                        alert("Đã thêm sản phẩm vào giỏ hàng!");
+                    },
+                    error: function(xhr, status, error){
+                        console.error("Lỗi giỏ hàng:", error);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
