@@ -58,9 +58,7 @@
                         <ul class="navbar-nav">
                             @foreach($categories as $category)
                                 <li class="nav-item">
-                                    <a class="nav-link menu-the-loai" the_loai="{{$category->id}}" href="{{url('laptop/theloai/'.$category->id)}}">
-                                        {{$category->ten_danh_muc}}
-                                    </a>
+
                                 </li>
                             @endforeach
                         </ul>
