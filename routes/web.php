@@ -19,6 +19,7 @@ Route:: middleware('auth')->group(function () {
 
 // LaptopController Hiển thị danh sách
 Route::get('/admin/laptop', [LaptopController::class, 'index'])->name('admin.index');
+Route::get('/admin/laptop/{id}', [LaptopController::class, 'show'])->name('admin.show');
 Route::delete('/admin/laptop/{id}', [LaptopController::class, 'destroy'])->name('admin.destroy');
 
 require __DIR__.'/auth.php';
