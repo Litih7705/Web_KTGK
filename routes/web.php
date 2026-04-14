@@ -14,10 +14,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Route chi tiết sản phẩm, tìm kiếm 
-Route::get('/laptop/chitiet/{id}', [LaptopController3::class, 'chiTiet']);
+Route::get('/laptop/chitiet/{id}', [LaptopController3::class, 'chiTiet'])->name('laptop.detail2');
 Route::post('/timkiem', [LaptopController3::class, 'timKiem']);
-Route::get('/laptop/chitiet/{id}', [App\Http\Controllers\LaptopController3::class, 'chiTiet'])->name('laptop.detail2');
-Route::get('/laptop/danh-muc/{id}', [App\Http\Controllers\LaptopController3::class, 'index'])->name('laptop.category2');
+Route::get('/laptop/danh-muc/{id}', [HomeController::class, 'index'])->name('laptop.category2');
 
 //Profile
 Route:: middleware('auth')->group(function () {
@@ -28,6 +27,7 @@ Route:: middleware('auth')->group(function () {
 
 // LaptopController Hiển thị danh sách
 Route::get('/admin/laptop', [LaptopController::class, 'index'])->name('admin.index');
+Route::get('/admin/laptop/{id}', [LaptopController::class, 'show'])->name('admin.show');
 Route::delete('/admin/laptop/{id}', [LaptopController::class, 'destroy'])->name('admin.destroy');
 
 // Đơn hàng, Thanh toán
@@ -36,10 +36,6 @@ Route::post('/cart/add','App\Http\Controllers\LaptopOrderController@cartadd')->n
 Route::post('/cart/delete','App\Http\Controllers\LaptopOrderController@cartdelete')->name('cartdelete');
 Route::post('/order/create','App\Http\Controllers\LaptopOrderController@ordercreate') ->middleware('auth')->name('ordercreate');
 Route::post('/laptopview','App\Http\Controllers\LaptopOrderController@laptopview')->name("laptopview");
-
-// Trang chủ hiển thị mặc định 20 laptop hoặc lọc theo danh mục
-Route::get('/laptop/chitiet/{id}', [App\Http\Controllers\HomeController::class, 'chiTiet'])->name('laptop.detail2');
-Route::get('/laptop/danh-muc/{id}', [App\Http\Controllers\HomeController::class, 'index'])->name('laptop.category2');
 
 
 require __DIR__.'/auth.php';

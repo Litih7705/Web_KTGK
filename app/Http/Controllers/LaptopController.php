@@ -17,6 +17,17 @@ class LaptopController extends Controller
 
     return view('admin.index', compact('laptops'));
     }
+
+    public function show($id)
+    {
+        $laptop = DB::table('san_pham')->where('id', $id)->first();
+
+        if (! $laptop) {
+            abort(404);
+        }
+
+        return view('admin.show', compact('laptop'));
+    }
     
     public function destroy($id)
     {

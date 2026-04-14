@@ -14,7 +14,12 @@
                             <i class="text-danger font-weight-bold d-block mt-2">{{ number_format($row->gia, 0, ',', '.') }}đ</i>
                         </div>
                     </a>
-                    <button class="btn btn-success btn-sm mb-2">Thêm vào giỏ hàng</button>
+                    <form action="{{ route('cartadd') }}" method="POST" class="mb-2">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $row->id }}">
+                        <input type="hidden" name="num" value="1">
+                        <button type="submit" class="btn btn-success btn-sm">Thêm vào giỏ hàng</button>
+                    </form>
                 </div>
             @endforeach
         @else
