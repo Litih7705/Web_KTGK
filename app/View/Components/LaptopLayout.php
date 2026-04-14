@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class LaptopLayout extends Component
 {
     /**
@@ -15,8 +16,13 @@ class LaptopLayout extends Component
  
     public function __construct()
     {
-        //
-        $this->categories = DB::table("danh_muc_laptop")->get();
+        try {
+            $this->categories = DB::table("danh_muc_laptop")->get();
+        } catch (\Throwable $e) {
+            // Keep page rendering even if category table is not ready.
+            $this->categories = collect();
+            Log::warning('Cannot load categories for laptop layout', ['error' => $e->getMessage()]);
+        }
     }
 
     /**
