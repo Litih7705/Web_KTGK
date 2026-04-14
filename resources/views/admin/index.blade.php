@@ -53,7 +53,11 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex gap-1 justify-content-center">
+<<<<<<< HEAD
                                         <a href="{{ route('admin.show', $item->id) }}" class="btn btn-primary btn-sm">Xem</a>
+=======
+                                        <a href="{{ url('laptop/chitiet/'.$item->id) }}" class="btn btn-primary btn-sm">Xem</a>
+>>>>>>> 41d48f2962f434d6d7c6771a1d90b2dad8a0f7c8
                                         <form action="{{ route('admin.destroy', $item->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')

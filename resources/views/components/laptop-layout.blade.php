@@ -109,7 +109,7 @@
     </style>
 </head>
 <body>
-    <header>
+<header>
         <div style='text-align:center; max-width:1000px; margin:0 auto'>
             <img src="{{asset('images/banner.png')}}" width="1000px">
             <nav class="navbar navbar-light navbar-expand-sm">
@@ -118,7 +118,7 @@
                         <ul class="navbar-nav">
                             @foreach($categories as $category)
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{url('laptop/theloai/'.$category->id)}}">{{$category->ten_danh_muc}}</a>
+                                    <a class="nav-link" href="{{ route('laptop.category2', $category->id) }}">{{$category->ten_danh_muc}}</a>
                                 </li>
                             @endforeach
                         </ul>
@@ -139,7 +139,7 @@
                                     0
                                 @endif
                         </div>
-                        <a href="{{url('/gio-hang')}}" style='cursor:pointer;color:white;'>
+                        <a href="{{url('/order')}}" style='cursor:pointer;color:white;'>
                             <i class="fa fa-cart-arrow-down fa-2x mr-2 mt-1" aria-hidden="true"></i>
                         </a>
                     </div>
@@ -160,7 +160,7 @@
                                 </div>
                             </div>
                         @else
-                            <a href="{{ route('login') }}">
+                        <a href="{{ route('login') }}">
                                 <button class='btn btn-sm btn-primary'>Đăng nhập</button>
                             </a>&nbsp;
                             <a href="{{ route('register') }}">
