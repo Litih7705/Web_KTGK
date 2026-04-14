@@ -28,7 +28,7 @@
                                 <td align='center'>{{ $key + 1 }}</td>
                                 <td class="pl-3"><strong>{{ $row->tieu_de }}</strong></td>
                                 <td align='center'>{{ $quantity[$row->id] ?? 1 }}</td>
-                                <td align='center'>{{ number_format($row->gia_ban, 0, ',', '.') }}đ</td>
+                                <td align='center'>{{ number_format($row->gia, 0, ',', '.') }}đ</td>
                                 <td align='center'>
                                     <form method='post' action="{{ route('cartdelete') }}">
                                         @csrf
@@ -41,7 +41,7 @@
                             </tr>
                             @php
                                 $qty = $quantity[$row->id] ?? 1;
-                                $tongTien += $qty * $row->gia_ban;
+                                $tongTien += $qty * $row->gia;
                             @endphp
                         @endforeach
                         
@@ -103,7 +103,7 @@
                                 </div>
                                 <div class='card-body p-2'>
                                     <h6 class='font-weight-bold mb-1' style="font-size: 14px;">{{ $row->tieu_de }}</h6>
-                                    <p class='text-danger font-weight-bold mb-0'>{{ number_format($row->gia_ban, 0, ",", ".") }}đ</p>
+                                    <p class='text-danger font-weight-bold mb-0'>{{ number_format($row->gia, 0, ",", ".") }}đ</p>
                                 </div>
                             </a> 
                             <div class='card-footer bg-transparent border-0 pb-3'>

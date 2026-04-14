@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <div class="py-4">
-        <div class="container mx-auto">
+        <div style="max-width: 1000px; margin: 0 auto;">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 
                 @if(session('success'))
@@ -53,7 +53,7 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex gap-1 justify-content-center">
-                                        <a href="{{ url('/laptop/'.$item->id) }}" class="btn btn-primary btn-sm">Xem</a>
+                                        <a href="{{ url('laptop/chitiet/'.$item->id) }}" class="btn btn-primary btn-sm">Xem</a>
                                         <form action="{{ route('admin.destroy', $item->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')

@@ -8,7 +8,7 @@
             
             <div class="card-body text-center d-flex flex-column">
                 <h6 class="card-title font-weight-bold">{{ $row->tieu_de }}</h6>
-                <p class="card-text text-danger mt-auto">{{ number_format($row->gia_ban, 0, ",", ".") }}đ</p>
+                <p class="card-text text-danger mt-auto">{{ number_format($row->gia, 0, ",", ".") }}đ</p>
                 
                 <div class="btn-add-product mt-2">
                     <button class="btn btn-success btn-sm btn-block add-product" laptop_id="{{ $row->id }}">

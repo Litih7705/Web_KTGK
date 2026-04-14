@@ -11,145 +11,138 @@ class LaptopOrderController extends Controller
    
 {
     /**
-     * Thêm laptop vào giỏ hàng (Xử lý Ajax)
+     * Xử lý thêm Laptop vào giỏ hàng bằng Ajax
      */
     public function cartadd(Request $request)
     {
+        // Kiểm tra dữ liệu đầu vào
         $request->validate([
-            "id" => "required|numeric",
-            "num" => "required|numeric|min:1"
+            "id" => ["required", "numeric"],
+            "num" => ["required", "numeric"]
         ]);
 
         $id = $request->id;
         $num = $request->num;
-        
-        // Lấy giỏ hàng hiện tại hoặc khởi tạo mảng rỗng
-        $cart = session()->get("cart", []);
+        $cart = [];
 
-        // Cộng dồn nếu laptop đã tồn tại trong giỏ, ngược lại thêm mới
-        if (isset($cart[$id])) {
-            $cart[$id] += $num;
+        // Kiểm tra xem giỏ hàng đã tồn tại trong session chưa
+        if (session()->has('cart')) {
+            $cart = session()->get("cart");
+            if (isset($cart[$id])) {
+                $cart[$id] += $num; // Nếu đã có laptop này thì cộng dồn số lượng
+            } else {
+                $cart[$id] = $num; // Nếu chưa có thì thêm mới vào mảng
+            }
         } else {
             $cart[$id] = $num;
         }
 
+        // Lưu lại giỏ hàng vào session
         session()->put("cart", $cart);
-
-        // Trả về số lượng dòng sản phẩm trong giỏ để hiển thị lên icon giỏ hàng
-        return response()->json(count($cart));
-    }
-
-    /**
-     * Hiển thị danh sách laptop theo thể loại hoặc mặc định
-     */
-    public function laptopview(Request $request)
-    {
-        $the_loai = $request->input("the_loai");
         
-        if ($the_loai != "") {
-            // Lấy laptop theo danh mục cụ thể
-            $data = DB::table("laptop")
-                ->where("ma_danh_muc", $the_loai)
-                ->get();
-        } else {
-            // Mặc định lấy 10 laptop giá rẻ nhất
-            $data = DB::table("laptop")
-                ->orderBy("gia_ban", "asc")
-                ->limit(10)
-                ->get();
-        }
-
-        return view("vidulaptop.laptopview", compact("data"));
+        // Trả về tổng số loại mặt hàng để cập nhật Badge trên Header
+        return count($cart);
     }
 
     /**
-     * Hiển thị trang giỏ hàng và thanh toán
+     * Hiển thị danh sách Laptop trong giỏ hàng
      */
     public function order()
     {
-        $cart = session()->get("cart", []);
-        $quantity = $cart;
         $data = [];
+        $quantity = [];
 
-        if (!empty($cart)) {
-            // Lấy thông tin chi tiết các laptop có trong giỏ hàng
-            $data = DB::table("laptop")
-                ->whereIn("id", array_keys($cart))
-                ->get();
+        if (session()->has('cart')) {
+            $cart = session("cart");
+            $list_id = "";
+
+            foreach ($cart as $id => $value) {
+                $quantity[$id] = $value; // Lưu số lượng của từng laptop
+                $list_id .= $id . ", "; // Tạo chuỗi ID để truy vấn
+            }
+
+            // Xóa dấu phẩy thừa ở cuối chuỗi
+            $list_id = rtrim($list_id, ", ");
+
+            if (!empty($list_id)) {
+                // Lấy thông tin chi tiết các Laptop từ bảng 'laptop'
+                $data = DB::table("laptop")->whereRaw("id in (" . $list_id . ")")->get();
+            }
         }
 
         return view("vidulaptop.order", compact("quantity", "data"));
     }
 
     /**
-     * Xóa một laptop khỏi giỏ hàng
+     * Xóa một Laptop khỏi giỏ hàng
      */
     public function cartdelete(Request $request)
     {
-        $request->validate(["id" => "required|numeric"]);
-        
-        $cart = session()->get("cart", []);
-        
-        if (isset($cart[$request->id])) {
-            unset($cart[$request->id]);
+        $request->validate(["id" => ["required", "numeric"]]);
+        $id = $request->id;
+
+        if (session()->has('cart')) {
+            $cart = session()->get("cart");
+            unset($cart[$id]); // Loại bỏ laptop khỏi giỏ hàng
             session()->put("cart", $cart);
         }
 
-        return redirect()->route('order')->with('success', 'Đã xóa laptop khỏi giỏ hàng');
+        return redirect()->route('order');
     }
 
     /**
-     * Lưu đơn hàng và chi tiết đơn hàng vào database
+     * Lưu đơn hàng Laptop vào Database
      */
     public function ordercreate(Request $request)
     {
+        // Kiểm tra hình thức thanh toán
         $request->validate([
-            "hinh_thuc_thanh_toan" => "required|numeric"
+            "hinh_thuc_thanh_toan" => ["required", "numeric"]
         ]);
 
-        $cart = session()->get("cart", []);
+        if (session()->has('cart')) {
+            
+            // Chuẩn bị dữ liệu bảng don_hang
+$order = [
+                "ngay_dat_hang" => DB::raw("now()"),
+                "tinh_trang" => 1, // 1: Mới đặt, 2: Đang xử lý...
+                "hinh_thuc_thanh_toan" => $request->hinh_thuc_thanh_toan,
+                "user_id" => Auth::user()->id
+            ];
 
-        if (empty($cart)) {
-            return redirect()->back()->with('error', 'Giỏ hàng của bạn đang trống!');
-        }
+            // Sử dụng Transaction để đảm bảo tính toàn vẹn dữ liệu
+            DB::transaction(function () use ($order) {
+                
+                // 1. Chèn đơn hàng và lấy ID vừa tạo
+                $id_don_hang = DB::table("don_hang")->insertGetId($order);
 
-        try {
-            DB::transaction(function () use ($request, $cart) {
-                // 1. Tạo đơn hàng mới
-                $orderId = DB::table("don_hang")->insertGetId([
-                    "ngay_dat_hang"        => now(),
-                    "tinh_trang"           => 1, // 1: Mới đặt hàng
-                    "hinh_thuc_thanh_toan" => $request->hinh_thuc_thanh_toan,
-                    "user_id"              => Auth::id()
-                ]);
+                $cart = session("cart");
+                $list_id = implode(',', array_keys($cart));
 
-                // 2. Truy vấn lại giá laptop từ DB để đảm bảo tính chính xác
-                $laptops = DB::table("laptop")
-                    ->whereIn("id", array_keys($cart))
-                    ->get();
+                // 2. Lấy đơn giá hiện tại của các Laptop từ database
+                $laptops = DB::table("laptop")->whereIn("id", array_keys($cart))->get();
 
-                $details = [];
-                foreach ($laptops as $laptop) {
-                    $details[] = [
-                        "ma_don_hang" => $orderId,
-                        "laptop_id"   => $laptop->id,
-                        "so_luong"    => $cart[$laptop->id],
-                        "don_gia"     => $laptop->gia_ban
+                $detail = [];
+                foreach ($laptops as $row) {
+                    $detail[] = [
+                        "ma_don_hang" => $id_don_hang,
+                        "laptop_id"   => $row->id,
+                        "so_luong"    => $cart[$row->id],
+                        "don_gia"     => $row->gia_ban
                     ];
                 }
 
-                // 3. Lưu dữ liệu vào bảng chi tiết đơn hàng
-                DB::table("chi_tiet_don_hang")->insert($details);
+                // 3. Lưu vào bảng chi tiết đơn hàng
+                DB::table("chi_tiet_don_hang")->insert($detail);
 
-                // 4. Làm sạch giỏ hàng sau khi đặt thành công
+                // 4. Xóa giỏ hàng sau khi đặt thành công
                 session()->forget('cart');
             });
-
-            return view("vidulaptop.order_success");
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Lỗi hệ thống: ' . $e->getMessage());
         }
+
+        // Chuyển hướng về trang thông báo hoặc danh sách đơn hàng (tùy nhu cầu)
+        return redirect()->route('order')->with('success', 'Đặt hàng thành công!');
     }
 }
+
 
