@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LaptopController3;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LaptopController;
@@ -10,6 +11,10 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route chi tiết sản phẩm, tìm kiếm 
+Route::get('/laptop/chitiet/{id}', [LaptopController3::class, 'chiTiet']);
+Route::post('/timkiem', [LaptopController3::class, 'timKiem']);
 
 //Profile
 Route:: middleware('auth')->group(function () {
