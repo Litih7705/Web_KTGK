@@ -118,7 +118,7 @@
                         <ul class="navbar-nav">
                             @foreach($categories as $category)
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{url('laptop/theloai/'.$category->id)}}">{{$category->ten_danh_muc}}</a>
+                                    <a class="nav-link" href="{{ route('laptop.category2', $category->id) }}">{{$category->ten_danh_muc}}</a>
                                 </li>
                             @endforeach
                         </ul>
