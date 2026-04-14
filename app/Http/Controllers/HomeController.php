@@ -31,16 +31,7 @@ class HomeController extends Controller
 
     // Truyền dữ liệu sang view 
     return view("laptop.index2", compact('laptops', 'categories', 'id'));
-}
-    public function detail($id)
-{
-    // Tìm sản phẩm theo id, nếu không thấy sẽ báo lỗi 404
-    $laptop = SanPham::findOrFail($id);
-    
-    // Vẫn lấy danh mục để hiển thị trên menu
-    $categories = DanhMucLaptop::all();
 
-    return view('laptop.detail2', compact('laptop', 'categories'));
 }
     // Hàm mới hoàn toàn để xử lý lọc thương hiệu
     public function category(Request $request, $id)
